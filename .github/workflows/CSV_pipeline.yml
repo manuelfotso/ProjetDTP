@@ -1,52 +1,52 @@
-Nom: Pipeline CSV
-sur:
-  pousser:
+name: CSV Pipeline
+on:
+  push:
     branches:
-      - principal
+      - main
   workflow_dispatch:
-    entrées:
-      environnement:
-        description: Selectionner lenvironnement
-        requis: vrai
-        valeur par défaut: « dev »
-emplois:
-  pipeline csv:
-    fonctionne sous: ubuntu-latest
-    stratégie:
-      matrice:
+    inputs:
+      env:
+        description: selectionner lenvironnement
+        required: true
+        default: dev
+jobs:
+  csv_pipeline:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
         env:
           - dev
           - test
           - prod
-        version de Python:
+        python-version:
           - 3.1
           - 3.11
-    mesures:
-      - nom: Dépôt de vérification
-        utilisations: actions/checkout@v3
-      - nom: Configurer Python
-        utilise: actions/setup-python@v4
-        avec:
-          version de Python: "3.11"
-      - nom: Installer les dépendances
-        exécuter: |
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
           
-          python -m pip installer --mise à jour de pip
+          python -m pip install --upgrade pip
 
-          pip install pandas   # ou toute autre dépendance nécessaire
-      - nom: Exécuter le script Python pour ${{ matrix.env }}
-        exécuter: |
+          pip install pandas  # ou toute autre dependance necessaire
+      - name: Run Python script for ${{ matrix.env }}
+        run: |
           
-          si [ "${{ matrix.env }}" == "dev" ]; alors
+          if [ "${{ matrix.env }}" == "dev" ]; then
 
-            scripts Python/csv_to_dev.py
+            python scripts/csv_to_dev.py
 
-          elif [ "${{ matrix.env }}" == "test" ]; alors
+          elif [ "${{ matrix.env }}" == "test" ]; then
 
-            scripts Python/csv_to_test.py
+            python scripts/csv_to_test.py
 
           elif [ "${{ matrix.env }}" == "prod" ]; then
 
-            scripts Python/csv_to_prod.py
+            python scripts/csv_to_prod.py
 
           fi
